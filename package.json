@@ -1,0 +1,23 @@
+{
+  "name": "unstated-devtools",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "aik examples/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "deep-diff": "^0.3.8",
+    "unstated": "^1.0.3"
+  },
+  "devDependencies": {
+    "aik": "^0.18.0",
+    "prop-types": "^15.6.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0"
+  }
+}
