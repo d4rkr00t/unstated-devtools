@@ -38,20 +38,12 @@ const badgeStyles = ({ bg, text, strikeThrough }) => {
 };
 
 const formatDiffEdit = diff => ({
-  content: `%c${diff.path.join(".")}: %c${diff.lhs}%c → %c${diff.rhs}`,
+  content: `%c${diff.path.join(".")}: %c${diff.oldValue}%c → %c${diff.value}`,
   style: [
     "color: #757575; font-weight: lighter;",
     badgeStyles({ bg: "#fff59d", text: "#e53935", strikeThrough: "#b71c1c" }),
     "color: #757575;",
     badgeStyles({ bg: "#fff59d", text: "#00897b" })
-  ]
-});
-
-const formatDiffNew = diff => ({
-  content: `%c${diff.path.join(".")}: %c${diff.rhs}`,
-  style: [
-    "color: #757575; font-weight: lighter;",
-    badgeStyles({ bg: "#c5e1a5", text: "#455A64" })
   ]
 });
 
@@ -62,26 +54,38 @@ const formatDiffDelete = diff => ({
   ]
 });
 
-const formatDiffArray = diff => {
+const formatDiffAdd = diff => {
   return {
-    content: `%c${diff.path.join(".")}[${diff.index}] ← %c${diff.item.rhs}`,
+    content: `%c${diff.path.join(".")}: %c←%c %O`,
     style: [
       "color: #757575; font-weight: lighter;",
-      badgeStyles({ bg: "#c5e1a5", text: "#455A64" })
+      badgeStyles({ bg: "#c5e1a5", text: "#455A64" }),
+      "background: inherit; color: inherit; padding: 0;",
+      diff.value
+    ]
+  };
+};
+
+const formatDiffError = diff => {
+  return {
+    content: `%cERROR%c ${diff.message}`,
+    style: [
+      badgeStyles({ bg: "#EF5350", text: "#fff" }),
+      "background: inherit; color: inherit; padding: 0;"
     ]
   };
 };
 
 const formatDiffItem = diff => {
-  switch (diff.kind) {
-    case "E":
+  switch (diff.op) {
+    case "replace":
       return formatDiffEdit(diff);
-    case "N":
-      return formatDiffNew(diff);
-    case "D":
+    case "add":
+      return formatDiffAdd(diff);
+    case "remove":
       return formatDiffDelete(diff);
-    case "A":
-      return formatDiffArray(diff);
+    case "error":
+      return formatDiffError(diff);
     default:
       return null;
   }
@@ -140,9 +144,13 @@ export class ConsoleLogMonitor extends React.Component {
     console.log("%cprev state:", "color: #757575;", oldState);
     console.log("%cchange:    ", "color: #8e24aa;", change);
     console.log("%cnew state: ", "color: #2e7d32;", newState);
-    console.groupCollapsed("diff");
-    printByLine(diff.map(formatDiffItem));
-    console.groupEnd("diff");
+
+    if (diff) {
+      console.groupCollapsed("diff");
+      printByLine(diff.map(formatDiffItem));
+      console.groupEnd("diff");
+    }
+
     console.groupEnd(groupTitle);
   };
 

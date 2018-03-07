@@ -1,4 +1,4 @@
-import deepDiff from "deep-diff";
+import { diff as differ } from "./diff";
 
 export class DevToolsAPI {
   constructor() {
@@ -17,7 +17,7 @@ export class DevToolsAPI {
     this.listeners[event] = this.listeners[event].filter(c => c !== cb);
   }
 
-  registerContainer({ container, name, state }) {
+  registerContainer({ container, state }) {
     if (this.containers.has(container)) return;
 
     const meta = {
@@ -30,16 +30,18 @@ export class DevToolsAPI {
     this.onRegisterContainer({ container: meta, timestamp: Date.now() });
   }
 
+  // TODO: State history
   stateChange({ container, oldState, change, newState }) {
     const meta = this.containers.get(container);
-    const diff = deepDiff(oldState, newState);
+    const timestamp = Date.now();
     const newMeta = Object.assign({}, meta, { state: newState });
+    const diff = differ(oldState, newState, 50);
 
     this.containers.set(container, newMeta);
 
     this.onStateChange({
       container: newMeta,
-      timestamp: Date.now(),
+      timestamp,
 
       oldState,
       change,
