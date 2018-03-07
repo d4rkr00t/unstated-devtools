@@ -21,7 +21,7 @@ class CounterContainer extends Container {
     const newValue = this.state.count + amount;
     this.setState({
       count: newValue,
-      values: [newValue].concat(this.state.values)
+      values: [{ value: newValue }].concat(this.state.values)
     });
   }
 

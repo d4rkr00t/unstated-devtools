@@ -1,7 +1,28 @@
 import PropTypes from "prop-types";
 import { Subscribe } from "unstated";
 
-// TODO: Extract Container registration logic
+const registerContainer = (api, instance) => {
+  api.registerContainer({
+    container: instance.constructor,
+    state: instance.state
+  });
+
+  const oldSetState = instance.setState.bind(instance);
+
+  instance.setState = change => {
+    const oldState = instance.state;
+
+    oldSetState(change);
+
+    api.stateChange({
+      container: instance.constructor,
+      oldState,
+      change,
+      newState: instance.state
+    });
+  };
+};
+
 export class DevToolsSubscribe extends Subscribe {
   static propTypes = {
     children: PropTypes.func.isRequired
@@ -12,26 +33,7 @@ export class DevToolsSubscribe extends Subscribe {
 
     if (!props.inject) return;
 
-    const api = props.api;
-    props.inject.forEach(instance => {
-      api.registerContainer({
-        container: instance.constructor,
-        state: instance.state
-      });
-
-      const oldSetState = instance.setState.bind(instance);
-      instance.setState = change => {
-        const oldState = instance.state;
-        oldSetState(change);
-
-        api.stateChange({
-          container: instance.constructor,
-          oldState,
-          change,
-          newState: instance.state
-        });
-      };
-    });
+    props.inject.forEach(instance => registerContainer(props.api, instance));
   }
 
   componentWillReceiveProps() {}
@@ -42,26 +44,8 @@ export class DevToolsSubscribe extends Subscribe {
 
   _createInstances(map) {
     const oldSet = map.set.bind(map);
-    const api = this.props.api;
     map.set = (Container, instance) => {
-      api.registerContainer({
-        container: Container,
-        state: instance.state
-      });
-
-      const oldSetState = instance.setState.bind(instance);
-      instance.setState = change => {
-        const oldState = instance.state;
-        oldSetState(change);
-
-        api.stateChange({
-          container: Container,
-          oldState,
-          change,
-          newState: instance.state
-        });
-      };
-
+      registerContainer(this.props.api, instance);
       oldSet(Container, instance);
     };
   }
