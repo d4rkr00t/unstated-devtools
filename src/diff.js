@@ -79,7 +79,7 @@ export function diff(obj1, obj2, limit = 100) {
 const isLimitReached = (diffs, limit) =>
   diffs.remove.length + diffs.add.length + diffs.replace.length >= limit;
 
-const limitError = diffs => ({
+const limitError = () => ({
   remove: [],
   replace: [],
   add: [],

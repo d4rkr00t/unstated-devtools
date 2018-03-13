@@ -36,12 +36,6 @@ export class DevToolsSubscribe extends Subscribe {
     props.inject.forEach(instance => registerContainer(props.api, instance));
   }
 
-  componentWillReceiveProps() {}
-
-  componentWillUnmount() {}
-
-  _unsubscribe() {}
-
   _createInstances(map) {
     const oldSet = map.set.bind(map);
     map.set = (Container, instance) => {
@@ -49,4 +43,8 @@ export class DevToolsSubscribe extends Subscribe {
       oldSet(Container, instance);
     };
   }
+
+  componentWillReceiveProps() {}
+  componentWillUnmount() {}
+  _unsubscribe() {}
 }
