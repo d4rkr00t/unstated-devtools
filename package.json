@@ -12,7 +12,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "unstated": "^1.0.3"
+    "unstated": "^2.0.3"
   },
   "devDependencies": {
     "aik": "^0.18.0",
