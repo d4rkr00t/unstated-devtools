@@ -12,13 +12,13 @@ const registerContainer = (api, instance) => {
   instance.setState = change => {
     const oldState = instance.state;
 
-    oldSetState(change);
-
-    api.stateChange({
-      container: instance.constructor,
-      oldState,
-      change,
-      newState: instance.state
+    oldSetState(change).then(() => {
+      api.stateChange({
+        container: instance.constructor,
+        oldState,
+        change,
+        newState: instance.state
+      });
     });
   };
 };
